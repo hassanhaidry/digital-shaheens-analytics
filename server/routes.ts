@@ -441,11 +441,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { apiKey, spreadsheetId, sheetName } = req.body;
       
       if (!apiKey) {
-        return res.status(400).json({ error: "API key is required" });
+        return res.status(400).json({ 
+          success: false, 
+          message: "API key is required" 
+        });
       }
-      
-      // Store the API key globally - sheet specifics will be set per shop
-      process.env.GOOGLE_SHEETS_API_KEY = apiKey;
       
       // Update the Google Sheets service configuration with just the API key
       // Using placeholder values for spreadsheetId and sheetName as they'll be set per shop
@@ -455,16 +455,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sheetName: sheetName || "placeholder"
       });
       
-      // No need to test with fetchSheetData since we don't have actual sheet details
-      // Just verify the API key is in a valid format
-      if (!apiKey.match(/^[A-Za-z0-9_-]+$/)) {
-        return res.status(400).json({ 
+      try {
+        // Validate the API key format (doesn't actually check with Google API)
+        const isValid = await googleSheetsService.validateApiKey();
+        
+        if (isValid) {
+          // If validation passes, store the API key globally
+          process.env.GOOGLE_SHEETS_API_KEY = apiKey;
+          
+          console.log("Google Sheets API Key stored successfully");
+          
+          res.json({ 
+            success: true, 
+            message: "API key saved successfully" 
+          });
+        } else {
+          console.error("Invalid Google Sheets API key format");
+          res.status(400).json({ 
+            success: false, 
+            message: "Invalid API key format. Please check your Google Sheets API key." 
+          });
+        }
+      } catch (validationError) {
+        console.error("Error validating Google Sheets API key:", validationError);
+        res.status(400).json({ 
           success: false, 
-          message: "Invalid API key format. Please check your API key." 
+          message: "Could not validate Google Sheets API key. Please check your key." 
         });
       }
-      
-      res.json({ success: true, message: "API key saved successfully" });
     } catch (error) {
       console.error("Error saving Google Sheets API key:", error);
       res.status(500).json({ 

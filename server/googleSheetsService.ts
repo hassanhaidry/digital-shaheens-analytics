@@ -12,7 +12,7 @@ export class GoogleSheetsService {
   constructor() {
     // Get configuration from environment variables
     this.config = {
-      apiKey: process.env.GOOGLE_API_KEY || "",
+      apiKey: process.env.GOOGLE_SHEETS_API_KEY || process.env.GOOGLE_API_KEY || "",
       spreadsheetId: process.env.SPREADSHEET_ID || "",
       sheetName: process.env.SHEET_NAME || "Sales Data"
     };
@@ -23,15 +23,41 @@ export class GoogleSheetsService {
     this.config = { ...this.config, ...config };
     
     // Update environment variables for persistence
-    if (config.apiKey) process.env.GOOGLE_API_KEY = config.apiKey;
+    if (config.apiKey) {
+      process.env.GOOGLE_SHEETS_API_KEY = config.apiKey;
+      process.env.GOOGLE_API_KEY = config.apiKey; // For backwards compatibility
+    }
     if (config.spreadsheetId) process.env.SPREADSHEET_ID = config.spreadsheetId;
     if (config.sheetName) process.env.SHEET_NAME = config.sheetName;
   }
   
+  // Method to validate API key without requiring sheet details
+  async validateApiKey(): Promise<boolean> {
+    if (!this.config.apiKey) {
+      throw new Error("Google Sheets API key is missing");
+    }
+    
+    try {
+      // In a real implementation, we would verify the API key with Google API
+      // For testing purposes, we'll consider any key with the format "AIza..." as valid
+      const isValidFormat = this.config.apiKey.startsWith('AIza') || 
+                           this.config.apiKey.length >= 16;
+      
+      return isValidFormat;
+    } catch (error) {
+      console.error("Error validating Google Sheets API key:", error);
+      throw new Error("Failed to validate Google Sheets API key");
+    }
+  }
+
   // Method to fetch data from Google Sheets
   async fetchSheetData(): Promise<any[]> {
-    if (!this.config.apiKey || !this.config.spreadsheetId) {
-      throw new Error("Google Sheets API key or spreadsheet ID is missing");
+    if (!this.config.apiKey) {
+      throw new Error("Google Sheets API key is missing");
+    }
+    
+    if (!this.config.spreadsheetId) {
+      throw new Error("Spreadsheet ID is missing");
     }
     
     try {
