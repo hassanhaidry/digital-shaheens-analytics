@@ -201,129 +201,142 @@ const ShopsManagement: React.FC = () => {
                 <span>Add Shop</span>
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Shop</DialogTitle>
-                <DialogDescription>
+            <DialogContent className="max-w-2xl p-6">
+              <DialogHeader className="mb-2">
+                <DialogTitle className="text-2xl font-bold">Add New Shop</DialogTitle>
+                <DialogDescription className="text-gray-600 mt-1">
                   Enter the details for the new e-commerce shop.
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Shop Name
-                  </Label>
-                  <Input 
-                    id="name" 
-                    value={newShop.name}
-                    onChange={(e) => setNewShop({...newShop, name: e.target.value})}
-                    className="col-span-3" 
-                  />
+              <div className="grid gap-6 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name" className="mb-2 font-medium block">
+                      Shop Name
+                    </Label>
+                    <Input 
+                      id="name" 
+                      value={newShop.name}
+                      onChange={(e) => setNewShop({...newShop, name: e.target.value})}
+                      className="w-full" 
+                      placeholder="Enter shop name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="platform" className="mb-2 font-medium block">
+                      Platform
+                    </Label>
+                    <Select 
+                      value={newShop.platform} 
+                      onValueChange={(value) => setNewShop({...newShop, platform: value})}
+                    >
+                      <SelectTrigger id="platform" className="w-full">
+                        <SelectValue placeholder="Select platform" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="TikTok">TikTok Shop</SelectItem>
+                        <SelectItem value="Etsy">Etsy</SelectItem>
+                        <SelectItem value="eBay">eBay</SelectItem>
+                        <SelectItem value="Walmart">Walmart</SelectItem>
+                        <SelectItem value="Amazon">Amazon</SelectItem>
+                        <SelectItem value="OnBuy">OnBuy</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="platform" className="text-right">
-                    Platform
-                  </Label>
-                  <Select 
-                    value={newShop.platform} 
-                    onValueChange={(value) => setNewShop({...newShop, platform: value})}
-                  >
-                    <SelectTrigger id="platform" className="col-span-3">
-                      <SelectValue placeholder="Select platform" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="TikTok">TikTok Shop</SelectItem>
-                      <SelectItem value="Etsy">Etsy</SelectItem>
-                      <SelectItem value="eBay">eBay</SelectItem>
-                      <SelectItem value="Walmart">Walmart</SelectItem>
-                      <SelectItem value="Amazon">Amazon</SelectItem>
-                      <SelectItem value="OnBuy">OnBuy</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="region" className="text-right">
-                    Region
-                  </Label>
-                  <Select 
-                    value={newShop.region} 
-                    onValueChange={(value) => setNewShop({...newShop, region: value})}
-                  >
-                    <SelectTrigger id="region" className="col-span-3">
-                      <SelectValue placeholder="Select region" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="US">United States</SelectItem>
-                      <SelectItem value="EU">Europe</SelectItem>
-                      <SelectItem value="APAC">Asia-Pacific</SelectItem>
-                      <SelectItem value="MENA">Middle East</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="profit-share" className="text-right">
-                    Profit Share %
-                  </Label>
-                  <Input 
-                    id="profit-share" 
-                    type="number"
-                    value={newShop.profitSharePercentage}
-                    onChange={(e) => setNewShop({...newShop, profitSharePercentage: parseInt(e.target.value) || 0})}
-                    min="0"
-                    max="100"
-                    className="col-span-3" 
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="region" className="mb-2 font-medium block">
+                      Region
+                    </Label>
+                    <Select 
+                      value={newShop.region} 
+                      onValueChange={(value) => setNewShop({...newShop, region: value})}
+                    >
+                      <SelectTrigger id="region" className="w-full">
+                        <SelectValue placeholder="Select region" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="US">United States</SelectItem>
+                        <SelectItem value="EU">Europe</SelectItem>
+                        <SelectItem value="APAC">Asia-Pacific</SelectItem>
+                        <SelectItem value="MENA">Middle East</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="profit-share" className="mb-2 font-medium block">
+                      Profit Share %
+                    </Label>
+                    <Input 
+                      id="profit-share" 
+                      type="number"
+                      value={newShop.profitSharePercentage}
+                      onChange={(e) => setNewShop({...newShop, profitSharePercentage: parseInt(e.target.value) || 0})}
+                      min="0"
+                      max="100"
+                      className="w-full" 
+                    />
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="sheet-id" className="text-right">
-                    Sheet ID
-                  </Label>
-                  <div className="col-span-3 space-y-1">
+                <div className="grid grid-cols-1 gap-6 mt-2">
+                  <div>
+                    <Label htmlFor="sheet-id" className="mb-2 font-medium block">
+                      Sheet ID
+                    </Label>
                     <Input 
                       id="sheet-id" 
                       value={newShop.sheetId}
                       onChange={(e) => setNewShop({...newShop, sheetId: e.target.value})}
                       placeholder="Google Sheet ID from URL"
+                      className="w-full"
                     />
-                    <p className="text-xs text-gray-500">
-                      Find this in your sheet URL: https://docs.google.com/spreadsheets/d/<span className="font-bold">SHEET_ID_HERE</span>/edit
+                    <p className="text-xs text-gray-500 mt-1">
+                      Find this in your sheet URL: https://docs.google.com/spreadsheets/d/<span className="font-semibold">SHEET_ID_HERE</span>/edit
                     </p>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="sheet-name" className="text-right">
-                    Sheet Name
-                  </Label>
-                  <div className="col-span-3 space-y-1">
+                  <div>
+                    <Label htmlFor="sheet-name" className="mb-2 font-medium block">
+                      Sheet Name
+                    </Label>
                     <Input 
                       id="sheet-name" 
                       value={newShop.sheetName}
                       onChange={(e) => setNewShop({...newShop, sheetName: e.target.value})}
                       placeholder="Tab name within the sheet (e.g., 'Sales Data')"
+                      className="w-full"
                     />
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 mt-1">
                       This is the name of the tab in your sheet that contains the sales data
                     </p>
                   </div>
-                </div>
-                
-                <div className="col-span-4 bg-blue-50 p-3 rounded-lg text-sm text-blue-700 mt-2">
-                  <p className="flex items-center">
-                    <Info className="h-4 w-4 mr-2" />
-                    <span>Make sure you've added an API key in Settings first before adding shop data sources.</span>
-                  </p>
+                  
+                  <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-700 mt-2">
+                    <p className="flex items-center">
+                      <Info className="h-4 w-4 mr-2 flex-shrink-0" />
+                      <span>Make sure you've added an API key in Settings first before adding shop data sources.</span>
+                    </p>
+                  </div>
                 </div>
               </div>
               
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
-                <Button type="submit" className="bg-primary" onClick={handleAddShop} disabled={addShopMutation.isPending}>
+              <DialogFooter className="flex justify-end gap-2 mt-4">
+                <Button size="lg" variant="outline" onClick={() => setShowAddDialog(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  size="lg" 
+                  type="submit" 
+                  className="bg-blue-800 hover:bg-blue-900 text-white px-8 font-medium" 
+                  onClick={handleAddShop} 
+                  disabled={addShopMutation.isPending}
+                >
                   {addShopMutation.isPending ? 'Adding...' : 'Add Shop'}
                 </Button>
               </DialogFooter>
