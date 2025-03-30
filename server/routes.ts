@@ -48,8 +48,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Get all performance metrics within date range
-      const allMetrics = await storage.getPerformanceMetrics(undefined, from, to);
+      // Try to get metrics from Google Sheets for all shops
+      let allMetrics = [];
+      
+      try {
+        // First try to get metrics from Google Sheets if configured
+        if (process.env.GOOGLE_SHEETS_API_KEY) {
+          console.log('Attempting to fetch metrics from Google Sheets for dashboard');
+          
+          // Get all shops to fetch their metrics
+          const shops = await storage.getShops();
+          
+          // Collect metrics from all shops
+          const allGoogleSheetsMetrics = [];
+          
+          for (const shop of shops) {
+            try {
+              // Use the shop ID to fetch metrics from correct sheet
+              const shopMetrics = await googleSheetsService.calculateMetrics(shop.id, from, to);
+              allGoogleSheetsMetrics.push(...shopMetrics);
+            } catch (shopError) {
+              console.error(`Error fetching Google Sheets metrics for shop ${shop.id}:`, shopError);
+              // Continue with next shop
+            }
+          }
+          
+          if (allGoogleSheetsMetrics.length > 0) {
+            console.log(`Retrieved ${allGoogleSheetsMetrics.length} total metrics from Google Sheets`);
+            allMetrics = allGoogleSheetsMetrics;
+          } else {
+            console.log('No metrics found in Google Sheets, falling back to storage');
+            allMetrics = await storage.getPerformanceMetrics(undefined, from, to);
+          }
+        } else {
+          console.log('No Google Sheets API key set, using storage metrics');
+          allMetrics = await storage.getPerformanceMetrics(undefined, from, to);
+        }
+      } catch (error) {
+        console.error('Error fetching metrics from Google Sheets:', error);
+        allMetrics = await storage.getPerformanceMetrics(undefined, from, to);
+      }
 
       // Calculate totals for current period
       const revenue = allMetrics.reduce((sum, metric) => sum + Number(metric.revenue), 0);
@@ -106,6 +144,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const validatedData = insertShopSchema.parse(req.body);
       const newShop = await storage.createShop(validatedData);
+      
+      // If shop has sheet details, configure them in the Google Sheets service
+      if (validatedData.sheetId && validatedData.sheetName && googleSheetsService) {
+        try {
+          googleSheetsService.setShopConfig(newShop.id, validatedData.sheetId, validatedData.sheetName);
+          console.log(`Configured Google Sheets for shop ${newShop.id}: Sheet ID ${validatedData.sheetId}, Tab ${validatedData.sheetName}`);
+        } catch (sheetError) {
+          console.error(`Error configuring Google Sheets for shop ${newShop.id}:`, sheetError);
+          // We'll still proceed with shop creation even if sheet config fails
+        }
+      }
+      
       res.status(201).json(newShop);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -221,7 +271,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       todayStart.setHours(0, 0, 0, 0);
       const todayEnd = new Date();
       todayEnd.setHours(23, 59, 59, 999);
-      const todayMetrics = await storage.getPerformanceMetrics(shopId, todayStart, todayEnd);
+      
+      let todayMetrics = [];
+      
+      try {
+        // First try to get metrics from Google Sheets if configured
+        if (process.env.GOOGLE_SHEETS_API_KEY) {
+          console.log(`Attempting to fetch today's metrics from Google Sheets for shop ${shopId}`);
+          todayMetrics = await googleSheetsService.calculateMetrics(shopId, todayStart, todayEnd);
+          console.log(`Retrieved ${todayMetrics.length} today's metrics from Google Sheets`);
+        }
+        
+        // Fall back to storage if no metrics from Google Sheets
+        if (todayMetrics.length === 0) {
+          console.log(`Falling back to storage for today's metrics for shop ${shopId}`);
+          todayMetrics = await storage.getPerformanceMetrics(shopId, todayStart, todayEnd);
+        }
+      } catch (error) {
+        console.error(`Error fetching today's metrics from Google Sheets:`, error);
+        // Fall back to storage if there's an error
+        todayMetrics = await storage.getPerformanceMetrics(shopId, todayStart, todayEnd);
+      }
       
       // Calculate today's totals
       const todayRevenue = todayMetrics.reduce((sum, metric) => sum + Number(metric.revenue), 0);
@@ -235,7 +305,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       last7Start.setHours(0, 0, 0, 0);
       const last7End = new Date();
       last7End.setHours(23, 59, 59, 999);
-      const last7Metrics = await storage.getPerformanceMetrics(shopId, last7Start, last7End);
+      
+      let last7Metrics = [];
+      
+      try {
+        // First try to get metrics from Google Sheets if configured
+        if (process.env.GOOGLE_SHEETS_API_KEY) {
+          console.log(`Attempting to fetch 7-day metrics from Google Sheets for shop ${shopId}`);
+          last7Metrics = await googleSheetsService.calculateMetrics(shopId, last7Start, last7End);
+          console.log(`Retrieved ${last7Metrics.length} 7-day metrics from Google Sheets`);
+        }
+        
+        // Fall back to storage if no metrics from Google Sheets
+        if (last7Metrics.length === 0) {
+          console.log(`Falling back to storage for 7-day metrics for shop ${shopId}`);
+          last7Metrics = await storage.getPerformanceMetrics(shopId, last7Start, last7End);
+        }
+      } catch (error) {
+        console.error(`Error fetching 7-day metrics from Google Sheets:`, error);
+        // Fall back to storage if there's an error
+        last7Metrics = await storage.getPerformanceMetrics(shopId, last7Start, last7End);
+      }
       
       // Calculate last 7 days totals
       const last7Revenue = last7Metrics.reduce((sum, metric) => sum + Number(metric.revenue), 0);
@@ -249,7 +339,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       last30Start.setHours(0, 0, 0, 0);
       const last30End = new Date();
       last30End.setHours(23, 59, 59, 999);
-      const last30Metrics = await storage.getPerformanceMetrics(shopId, last30Start, last30End);
+      
+      let last30Metrics = [];
+      
+      try {
+        // First try to get metrics from Google Sheets if configured
+        if (process.env.GOOGLE_SHEETS_API_KEY) {
+          console.log(`Attempting to fetch 30-day metrics from Google Sheets for shop ${shopId}`);
+          last30Metrics = await googleSheetsService.calculateMetrics(shopId, last30Start, last30End);
+          console.log(`Retrieved ${last30Metrics.length} 30-day metrics from Google Sheets`);
+        }
+        
+        // Fall back to storage if no metrics from Google Sheets
+        if (last30Metrics.length === 0) {
+          console.log(`Falling back to storage for 30-day metrics for shop ${shopId}`);
+          last30Metrics = await storage.getPerformanceMetrics(shopId, last30Start, last30End);
+        }
+      } catch (error) {
+        console.error(`Error fetching 30-day metrics from Google Sheets:`, error);
+        // Fall back to storage if there's an error
+        last30Metrics = await storage.getPerformanceMetrics(shopId, last30Start, last30End);
+      }
       
       // Calculate last 30 days totals
       const last30Revenue = last30Metrics.reduce((sum, metric) => sum + Number(metric.revenue), 0);
@@ -320,7 +430,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const shops = await storage.getShops();
-      const allMetrics = await storage.getPerformanceMetrics(undefined, from, to);
+      
+      // Try to get metrics from Google Sheets for agency profit calculation
+      let allMetrics = [];
+      
+      try {
+        // First try to get metrics from Google Sheets if configured
+        if (process.env.GOOGLE_SHEETS_API_KEY) {
+          console.log('Attempting to fetch metrics from Google Sheets for agency profit');
+          
+          // Collect metrics from all shops
+          const allGoogleSheetsMetrics = [];
+          
+          for (const shop of shops) {
+            try {
+              // Use the shop ID to fetch metrics from correct sheet
+              const shopMetrics = await googleSheetsService.calculateMetrics(shop.id, from, to);
+              allGoogleSheetsMetrics.push(...shopMetrics);
+            } catch (shopError) {
+              console.error(`Error fetching Google Sheets metrics for shop ${shop.id} profit:`, shopError);
+              // Continue with next shop
+            }
+          }
+          
+          if (allGoogleSheetsMetrics.length > 0) {
+            console.log(`Retrieved ${allGoogleSheetsMetrics.length} total metrics from Google Sheets for agency profit`);
+            allMetrics = allGoogleSheetsMetrics;
+          } else {
+            console.log('No metrics found in Google Sheets, falling back to storage for agency profit');
+            allMetrics = await storage.getPerformanceMetrics(undefined, from, to);
+          }
+        } else {
+          console.log('No Google Sheets API key set, using storage metrics for agency profit');
+          allMetrics = await storage.getPerformanceMetrics(undefined, from, to);
+        }
+      } catch (error) {
+        console.error('Error fetching metrics from Google Sheets for agency profit:', error);
+        allMetrics = await storage.getPerformanceMetrics(undefined, from, to);
+      }
       
       // Calculate totals and breakdowns
       let totalRevenue = 0;
@@ -396,8 +543,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Get metrics for date range
-      const metrics = await storage.getPerformanceMetrics(undefined, from, to);
+      // Try to get metrics from Google Sheets for chart data
+      let metrics = [];
+      
+      try {
+        // First try to get metrics from Google Sheets if configured
+        if (process.env.GOOGLE_SHEETS_API_KEY) {
+          console.log('Attempting to fetch chart data from Google Sheets');
+          
+          // Get all shops to fetch their metrics
+          const shops = await storage.getShops();
+          
+          // Collect metrics from all shops
+          const allGoogleSheetsMetrics = [];
+          
+          for (const shop of shops) {
+            try {
+              // Use the shop ID to fetch metrics from correct sheet
+              const shopMetrics = await googleSheetsService.calculateMetrics(shop.id, from, to);
+              allGoogleSheetsMetrics.push(...shopMetrics);
+            } catch (shopError) {
+              console.error(`Error fetching Google Sheets metrics for shop ${shop.id}:`, shopError);
+              // Continue with next shop
+            }
+          }
+          
+          if (allGoogleSheetsMetrics.length > 0) {
+            console.log(`Retrieved ${allGoogleSheetsMetrics.length} total metrics from Google Sheets for chart data`);
+            metrics = allGoogleSheetsMetrics;
+          } else {
+            console.log('No metrics found in Google Sheets, falling back to storage for chart data');
+            metrics = await storage.getPerformanceMetrics(undefined, from, to);
+          }
+        } else {
+          console.log('No Google Sheets API key set, using storage metrics for chart data');
+          metrics = await storage.getPerformanceMetrics(undefined, from, to);
+        }
+      } catch (error) {
+        console.error('Error fetching metrics from Google Sheets for chart data:', error);
+        metrics = await storage.getPerformanceMetrics(undefined, from, to);
+      }
 
       // Group metrics by date
       const groupedByDate = metrics.reduce((groups, metric) => {

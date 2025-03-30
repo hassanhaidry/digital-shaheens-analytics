@@ -19,6 +19,8 @@ export const shops = pgTable("shops", {
   platform: text("platform").notNull(),
   region: text("region").notNull(),
   profitSharePercentage: numeric("profit_share_percentage").notNull().default("50"),
+  sheetId: text("sheet_id"),
+  sheetName: text("sheet_name"),
   createdAt: date("created_at").notNull().defaultNow(),
 });
 
@@ -47,6 +49,8 @@ export const insertShopSchema = createInsertSchema(shops).pick({
   platform: true,
   region: true,
   profitSharePercentage: true,
+  sheetId: true,
+  sheetName: true,
 });
 
 export const insertPerformanceMetricSchema = createInsertSchema(performanceMetrics).pick({

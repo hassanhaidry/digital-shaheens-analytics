@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { CalendarIcon, EyeOff, Eye, Plus, Trash, ArrowLeft, Store, Globe, BarChart3, DollarSign, ShoppingBag } from 'lucide-react';
+import { CalendarIcon, EyeOff, Eye, Plus, Trash, ArrowLeft, Store, Globe, BarChart3, DollarSign, ShoppingBag, Info } from 'lucide-react';
 import { formatCurrency, formatPercentage, formatNumber } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -283,26 +283,41 @@ const ShopsManagement: React.FC = () => {
                   <Label htmlFor="sheet-id" className="text-right">
                     Sheet ID
                   </Label>
-                  <Input 
-                    id="sheet-id" 
-                    value={newShop.sheetId}
-                    onChange={(e) => setNewShop({...newShop, sheetId: e.target.value})}
-                    className="col-span-3" 
-                    placeholder="Google Sheet ID from URL"
-                  />
+                  <div className="col-span-3 space-y-1">
+                    <Input 
+                      id="sheet-id" 
+                      value={newShop.sheetId}
+                      onChange={(e) => setNewShop({...newShop, sheetId: e.target.value})}
+                      placeholder="Google Sheet ID from URL"
+                    />
+                    <p className="text-xs text-gray-500">
+                      Find this in your sheet URL: https://docs.google.com/spreadsheets/d/<span className="font-bold">SHEET_ID_HERE</span>/edit
+                    </p>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="sheet-name" className="text-right">
                     Sheet Name
                   </Label>
-                  <Input 
-                    id="sheet-name" 
-                    value={newShop.sheetName}
-                    onChange={(e) => setNewShop({...newShop, sheetName: e.target.value})}
-                    className="col-span-3" 
-                    placeholder="Tab name within the sheet"
-                  />
+                  <div className="col-span-3 space-y-1">
+                    <Input 
+                      id="sheet-name" 
+                      value={newShop.sheetName}
+                      onChange={(e) => setNewShop({...newShop, sheetName: e.target.value})}
+                      placeholder="Tab name within the sheet (e.g., 'Sales Data')"
+                    />
+                    <p className="text-xs text-gray-500">
+                      This is the name of the tab in your sheet that contains the sales data
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="col-span-4 bg-blue-50 p-3 rounded-lg text-sm text-blue-700 mt-2">
+                  <p className="flex items-center">
+                    <Info className="h-4 w-4 mr-2" />
+                    <span>Make sure you've added an API key in Settings first before adding shop data sources.</span>
+                  </p>
                 </div>
               </div>
               
