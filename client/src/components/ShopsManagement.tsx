@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchShops, fetchShopPerformance, addShop } from '@/lib/googleSheetsApi';
+import { fetchShops, fetchShopPerformance, addShop, deleteShop } from '@/lib/googleSheetsApi';
 import { TimeFilter, DateRange, ShopInfo } from '@/types';
 import ShopDetails from './shops/ShopDetails';
 import { format } from 'date-fns';
@@ -35,9 +35,11 @@ const ShopsManagement: React.FC = () => {
   
   const [newShop, setNewShop] = useState({
     name: '',
-    platform: 'Shopify',
+    platform: 'TikTok',
     region: 'US',
-    profitSharePercentage: 20
+    profitSharePercentage: 20,
+    sheetId: '',
+    sheetName: ''
   });
 
   const { toast } = useToast();
@@ -68,7 +70,14 @@ const ShopsManagement: React.FC = () => {
         description: "The shop has been added successfully.",
       });
       setShowAddDialog(false);
-      setNewShop({ name: '', platform: 'Shopify', region: 'US', profitSharePercentage: 20 });
+      setNewShop({ 
+        name: '', 
+        platform: 'TikTok', 
+        region: 'US', 
+        profitSharePercentage: 20,
+        sheetId: '',
+        sheetName: ''
+      });
     },
     onError: (error) => {
       toast({
@@ -80,10 +89,7 @@ const ShopsManagement: React.FC = () => {
   });
 
   const deleteShopMutation = useMutation({
-    mutationFn: (shopId: number) => {
-      // This is a placeholder - actual implementation would interact with API
-      return Promise.resolve();
-    },
+    mutationFn: (shopId: number) => deleteShop(shopId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/shops'] });
       toast({
@@ -95,6 +101,13 @@ const ShopsManagement: React.FC = () => {
       if (selectedShopId === shopToDelete) {
         setSelectedShopId(null);
       }
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Could not delete shop. Please try again.",
+        variant: "destructive",
+      });
     }
   });
 
@@ -119,11 +132,31 @@ const ShopsManagement: React.FC = () => {
       return;
     }
     
+    if (!newShop.sheetId) {
+      toast({
+        title: "Missing information",
+        description: "Please provide a Sheet ID.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!newShop.sheetName) {
+      toast({
+        title: "Missing information",
+        description: "Please provide a Sheet Name.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     addShopMutation.mutate({
       name: newShop.name,
       platform: newShop.platform,
       region: newShop.region,
-      profitSharePercentage: newShop.profitSharePercentage
+      profitSharePercentage: newShop.profitSharePercentage,
+      sheetId: newShop.sheetId,
+      sheetName: newShop.sheetName
     });
   };
 
@@ -201,12 +234,12 @@ const ShopsManagement: React.FC = () => {
                       <SelectValue placeholder="Select platform" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Shopify">Shopify</SelectItem>
-                      <SelectItem value="WooCommerce">WooCommerce</SelectItem>
-                      <SelectItem value="Magento">Magento</SelectItem>
-                      <SelectItem value="TikTok">TikTok</SelectItem>
-                      <SelectItem value="Amazon">Amazon</SelectItem>
+                      <SelectItem value="TikTok">TikTok Shop</SelectItem>
+                      <SelectItem value="Etsy">Etsy</SelectItem>
                       <SelectItem value="eBay">eBay</SelectItem>
+                      <SelectItem value="Walmart">Walmart</SelectItem>
+                      <SelectItem value="Amazon">Amazon</SelectItem>
+                      <SelectItem value="OnBuy">OnBuy</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -243,6 +276,32 @@ const ShopsManagement: React.FC = () => {
                     min="0"
                     max="100"
                     className="col-span-3" 
+                  />
+                </div>
+
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="sheet-id" className="text-right">
+                    Sheet ID
+                  </Label>
+                  <Input 
+                    id="sheet-id" 
+                    value={newShop.sheetId}
+                    onChange={(e) => setNewShop({...newShop, sheetId: e.target.value})}
+                    className="col-span-3" 
+                    placeholder="Google Sheet ID from URL"
+                  />
+                </div>
+
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="sheet-name" className="text-right">
+                    Sheet Name
+                  </Label>
+                  <Input 
+                    id="sheet-name" 
+                    value={newShop.sheetName}
+                    onChange={(e) => setNewShop({...newShop, sheetName: e.target.value})}
+                    className="col-span-3" 
+                    placeholder="Tab name within the sheet"
                   />
                 </div>
               </div>

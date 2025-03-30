@@ -19,6 +19,7 @@ export interface IStorage {
   getShopById(id: number): Promise<Shop | undefined>;
   createShop(shop: InsertShop): Promise<Shop>;
   updateShop(id: number, shop: Partial<Shop>): Promise<Shop | undefined>;
+  deleteShop(id: number): Promise<boolean>;
   
   // Performance metrics operations
   getPerformanceMetrics(
@@ -108,6 +109,29 @@ export class MemStorage implements IStorage {
     const updatedShop = { ...shop, ...shopUpdate };
     this.shops.set(id, updatedShop);
     return updatedShop;
+  }
+  
+  async deleteShop(id: number): Promise<boolean> {
+    if (!this.shops.has(id)) {
+      return false;
+    }
+    
+    // Delete the shop
+    this.shops.delete(id);
+    
+    // Also delete all performance metrics associated with this shop
+    const metricsToDelete: number[] = [];
+    this.performanceMetrics.forEach((metric, metricId) => {
+      if (metric.shopId === id) {
+        metricsToDelete.push(metricId);
+      }
+    });
+    
+    metricsToDelete.forEach(metricId => {
+      this.performanceMetrics.delete(metricId);
+    });
+    
+    return true;
   }
   
   // Performance metrics operations

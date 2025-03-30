@@ -4,6 +4,8 @@ export interface ShopInfo {
   platform: string;
   region: string;
   profitSharePercentage: number;
+  sheetId?: string;
+  sheetName?: string;
   revenue?: number;
   orders?: number;
   profit?: number;

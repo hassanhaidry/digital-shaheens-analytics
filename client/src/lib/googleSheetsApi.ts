@@ -85,6 +85,14 @@ export async function addShop(
   return response.json();
 }
 
+// Function to delete a shop
+export async function deleteShop(
+  shopId: number
+): Promise<{success: boolean}> {
+  const response = await apiRequest('DELETE', `/api/shops/${shopId}`);
+  return response.json();
+}
+
 // Function to fetch chart data
 export async function fetchChartData(
   timeFilter: TimeFilter = '30d',

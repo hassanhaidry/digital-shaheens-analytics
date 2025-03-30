@@ -132,6 +132,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to fetch shop" });
     }
   });
+  
+  apiRouter.delete("/shops/:id", async (req, res) => {
+    try {
+      const shopId = parseInt(req.params.id);
+      const success = await storage.deleteShop(shopId);
+      
+      if (!success) {
+        return res.status(404).json({ error: "Shop not found" });
+      }
+      
+      res.status(200).json({ success: true, message: "Shop successfully deleted" });
+    } catch (error) {
+      console.error("Error deleting shop:", error);
+      res.status(500).json({ error: "Failed to delete shop" });
+    }
+  });
 
   apiRouter.patch("/shops/:id/profit-share", async (req, res) => {
     try {
