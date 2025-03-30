@@ -114,9 +114,41 @@ export class GoogleSheetsService {
       
       // Query the sheet
       try {
+        // First, get the sheets in the spreadsheet to handle complex sheet names
+        const spreadsheet = await sheets.spreadsheets.get({
+          spreadsheetId: spreadsheetId,
+          fields: 'sheets.properties'
+        });
+        
+        const sheetsInfo = spreadsheet.data.sheets;
+        let sheetId = null;
+        
+        // Find the sheet with the matching title
+        for (const sheet of sheetsInfo || []) {
+          if (sheet.properties?.title?.toLowerCase() === sheetName.toLowerCase()) {
+            sheetId = sheet.properties.sheetId;
+            console.log(`Found matching sheet: "${sheet.properties.title}" with ID ${sheetId}`);
+            break;
+          }
+        }
+        
+        if (sheetId === null) {
+          console.warn(`Could not find sheet named "${sheetName}" in spreadsheet. Available sheets:`);
+          sheetsInfo?.forEach(sheet => {
+            console.log(`- ${sheet.properties?.title}`);
+          });
+          
+          // Try using the first sheet if available
+          if (sheetsInfo && sheetsInfo.length > 0 && sheetsInfo[0].properties?.title) {
+            sheetName = sheetsInfo[0].properties.title;
+            console.log(`Falling back to first sheet: "${sheetName}"`);
+          }
+        }
+        
+        // Now get the values using the correct sheet name
         const response = await sheets.spreadsheets.values.get({
           spreadsheetId: spreadsheetId,
-          range: sheetName,
+          range: sheetName
         });
         
         const rows = response.data.values;
