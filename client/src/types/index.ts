@@ -82,6 +82,6 @@ export interface ChartDataPoint {
 export type TimeFilter = "today" | "yesterday" | "7d" | "30d" | "mtd" | "ytd" | "custom";
 
 export interface DateRange {
-  from: Date;
-  to: Date;
+  from?: Date;
+  to?: Date;
 }

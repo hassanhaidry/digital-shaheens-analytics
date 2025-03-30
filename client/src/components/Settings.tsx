@@ -3,118 +3,150 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PenLine, Mail, Calendar, User } from 'lucide-react';
 
 const Settings: React.FC = () => {
   return (
     <div>
+      {/* Account Settings Header */}
       <Card className="bg-primary rounded-lg mb-6">
         <CardContent className="p-6">
-          <h3 className="text-white text-xl font-semibold mb-2">Account Settings</h3>
+          <h3 className="text-white text-xl font-semibold">Account Settings</h3>
           <p className="text-blue-200 text-sm">Manage your profile and preferences</p>
         </CardContent>
       </Card>
 
+      {/* Profile Information */}
       <Card className="bg-white rounded-lg shadow-sm mb-6">
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="bg-gray-100 border-b p-0 rounded-t-lg">
-            <TabsTrigger value="profile" className="py-3 px-5 data-[state=active]:bg-white rounded-none">
-              Profile Information
-            </TabsTrigger>
-            <TabsTrigger value="google-sheets" className="py-3 px-5 data-[state=active]:bg-white rounded-none">
-              Google Sheets Integration
-            </TabsTrigger>
-            <TabsTrigger value="notifications" className="py-3 px-5 data-[state=active]:bg-white rounded-none">
-              Notifications
-            </TabsTrigger>
-          </TabsList>
+        <CardContent className="p-0">
+          <div className="border-b p-6 border-gray-100 flex justify-between items-center">
+            <h3 className="text-lg font-medium text-gray-800">Profile Information</h3>
+            <Button variant="outline" className="text-primary flex items-center gap-1">
+              <PenLine className="h-4 w-4" />
+              Edit Profile
+            </Button>
+          </div>
           
-          <TabsContent value="profile" className="p-6">
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="full-name">Full Name</Label>
-                  <Input id="full-name" defaultValue="Admin User" />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" defaultValue="admin@example.com" />
+          <div className="p-6 space-y-4">
+            {/* Full Name */}
+            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex-none mr-3">
+                <div className="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4 text-gray-500" />
                 </div>
               </div>
-              
+              <div className="flex-grow">
+                <div className="text-sm text-gray-500">Full Name</div>
+                <div className="font-medium">Admin User</div>
+              </div>
+            </div>
+            
+            {/* Email Address */}
+            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex-none mr-3">
+                <div className="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
+                  <Mail className="h-4 w-4 text-gray-500" />
+                </div>
+              </div>
+              <div className="flex-grow">
+                <div className="text-sm text-gray-500">Email Address</div>
+                <div className="font-medium">admin@example.com</div>
+              </div>
+            </div>
+            
+            {/* Account Created */}
+            <div className="flex items-center p-4 bg-gray-50 rounded-lg">
+              <div className="flex-none mr-3">
+                <div className="h-8 w-8 bg-gray-200 rounded-full flex items-center justify-center">
+                  <Calendar className="h-4 w-4 text-gray-500" />
+                </div>
+              </div>
+              <div className="flex-grow">
+                <div className="text-sm text-gray-500">Account Created</div>
+                <div className="font-medium">February 27, 2025</div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Google Sheets Integration */}
+      <Card className="bg-white rounded-lg shadow-sm mb-6">
+        <CardContent className="p-0">
+          <div className="border-b p-6 border-gray-100">
+            <h3 className="text-lg font-medium text-gray-800">Google Sheets Integration</h3>
+            <p className="text-sm text-gray-500">Connect to your Google Sheets to import data</p>
+          </div>
+          
+          <div className="p-6 space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="sheet-id">Google Sheet ID</Label>
+              <Input id="sheet-id" placeholder="Enter your Google Sheet ID" />
+              <p className="text-xs text-gray-500 mt-1">
+                Found in your Google Sheet URL: https://docs.google.com/spreadsheets/d/[Sheet ID]/edit
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="sheet-name">Sheet Name</Label>
+              <Input id="sheet-name" placeholder="e.g. Sales Data" />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="api-key">API Key</Label>
+              <Input id="api-key" type="password" placeholder="Your Google API Key" />
+            </div>
+            
+            <Button className="bg-primary">Connect Google Sheet</Button>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Notification Preferences */}
+      <Card className="bg-white rounded-lg shadow-sm mb-6">
+        <CardContent className="p-0">
+          <div className="border-b p-6 border-gray-100">
+            <h3 className="text-lg font-medium text-gray-800">Notification Preferences</h3>
+            <p className="text-sm text-gray-500">Manage how you receive notifications and updates</p>
+          </div>
+          
+          <div className="p-6 space-y-4">
+            <div className="flex items-center justify-between py-3 border-b border-gray-100">
               <div>
-                <Label htmlFor="account-created">Account Created</Label>
-                <p className="text-gray-500 mt-1">February 27, 2025</p>
+                <h4 className="font-medium">Daily Sales Report</h4>
+                <p className="text-sm text-gray-500">Receive a daily summary of your sales</p>
               </div>
-              
-              <Button className="bg-primary">Save Changes</Button>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" defaultChecked />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="google-sheets" className="p-6">
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="sheet-id">Google Sheet ID</Label>
-                <Input id="sheet-id" placeholder="Enter your Google Sheet ID" />
-                <p className="text-xs text-gray-500 mt-1">
-                  Found in your Google Sheet URL: https://docs.google.com/spreadsheets/d/[Sheet ID]/edit
-                </p>
+            
+            <div className="flex items-center justify-between py-3 border-b border-gray-100">
+              <div>
+                <h4 className="font-medium">Weekly Performance Summary</h4>
+                <p className="text-sm text-gray-500">Get insights on your weekly performance</p>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="sheet-name">Sheet Name</Label>
-                <Input id="sheet-name" placeholder="e.g. Sales Data" />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="api-key">API Key</Label>
-                <Input id="api-key" type="password" placeholder="Your Google API Key" />
-              </div>
-              
-              <Button className="bg-primary">Connect Google Sheet</Button>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" defaultChecked />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
             </div>
-          </TabsContent>
-          
-          <TabsContent value="notifications" className="p-6">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between pb-4 border-b">
-                <div>
-                  <h4 className="font-medium">Daily Sales Report</h4>
-                  <p className="text-sm text-gray-500">Receive a daily summary of your sales</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
-                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
+            
+            <div className="flex items-center justify-between py-3 border-b border-gray-100">
+              <div>
+                <h4 className="font-medium">Low Stock Alerts</h4>
+                <p className="text-sm text-gray-500">Be notified when products are running low</p>
               </div>
-              
-              <div className="flex items-center justify-between pb-4 border-b">
-                <div>
-                  <h4 className="font-medium">Weekly Performance Summary</h4>
-                  <p className="text-sm text-gray-500">Get insights on your weekly performance</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" defaultChecked />
-                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-              
-              <div className="flex items-center justify-between pb-4 border-b">
-                <div>
-                  <h4 className="font-medium">Low Stock Alerts</h4>
-                  <p className="text-sm text-gray-500">Be notified when products are running low</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" className="sr-only peer" />
-                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                </label>
-              </div>
-              
-              <Button className="bg-primary">Save Preferences</Button>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" />
+                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
             </div>
-          </TabsContent>
-        </Tabs>
+            
+            <Button className="bg-primary mt-4">Save Preferences</Button>
+          </div>
+        </CardContent>
       </Card>
     </div>
   );
