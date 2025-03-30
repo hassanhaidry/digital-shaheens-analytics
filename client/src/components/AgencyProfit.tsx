@@ -56,7 +56,10 @@ const AgencyProfit: React.FC = () => {
           <PopoverContent className="w-auto p-0" align="end">
             <Calendar
               mode="range"
-              selected={dateRange}
+              selected={{
+                from: dateRange.from || undefined,
+                to: dateRange.to || undefined
+              }}
               onSelect={handleDateRangeChange}
               initialFocus
             />

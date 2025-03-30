@@ -17,7 +17,7 @@ export async function fetchPerformanceMetrics(
   
   params.append('timeFilter', timeFilter);
   
-  if (dateRange) {
+  if (dateRange?.from && dateRange?.to) {
     params.append('from', dateRange.from.toISOString());
     params.append('to', dateRange.to.toISOString());
   }
@@ -42,7 +42,7 @@ export async function fetchShopPerformance(
   
   params.append('timeFilter', timeFilter);
   
-  if (dateRange) {
+  if (dateRange?.from && dateRange?.to) {
     params.append('from', dateRange.from.toISOString());
     params.append('to', dateRange.to.toISOString());
   }
@@ -57,7 +57,7 @@ export async function fetchAgencyProfit(
 ): Promise<AgencyProfitData> {
   const params = new URLSearchParams();
   
-  if (dateRange) {
+  if (dateRange?.from && dateRange?.to) {
     params.append('from', dateRange.from.toISOString());
     params.append('to', dateRange.to.toISOString());
   }
@@ -94,7 +94,7 @@ export async function fetchChartData(
   
   params.append('timeFilter', timeFilter);
   
-  if (dateRange) {
+  if (dateRange?.from && dateRange?.to) {
     params.append('from', dateRange.from.toISOString());
     params.append('to', dateRange.to.toISOString());
   }

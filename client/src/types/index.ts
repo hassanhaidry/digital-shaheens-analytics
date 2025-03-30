@@ -4,6 +4,10 @@ export interface ShopInfo {
   platform: string;
   region: string;
   profitSharePercentage: number;
+  revenue?: number;
+  orders?: number;
+  profit?: number;
+  roi?: number;
 }
 
 export interface MetricData {
