@@ -440,28 +440,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { apiKey, spreadsheetId, sheetName } = req.body;
       
-      if (!apiKey || !spreadsheetId) {
-        return res.status(400).json({ error: "API key and spreadsheet ID are required" });
+      if (!apiKey) {
+        return res.status(400).json({ error: "API key is required" });
       }
       
-      // Update the Google Sheets service configuration
+      // Store the API key globally - sheet specifics will be set per shop
+      process.env.GOOGLE_SHEETS_API_KEY = apiKey;
+      
+      // Update the Google Sheets service configuration with just the API key
+      // Using placeholder values for spreadsheetId and sheetName as they'll be set per shop
       googleSheetsService.updateConfig({
         apiKey,
-        spreadsheetId,
-        sheetName: sheetName || "Sales Data"
+        spreadsheetId: spreadsheetId || "placeholder",
+        sheetName: sheetName || "placeholder"
       });
       
-      if (sheetName) {
-        process.env.SHEET_NAME = sheetName;
+      // No need to test with fetchSheetData since we don't have actual sheet details
+      // Just verify the API key is in a valid format
+      if (!apiKey.match(/^[A-Za-z0-9_-]+$/)) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Invalid API key format. Please check your API key." 
+        });
       }
       
-      // Test the connection
-      await googleSheetsService.fetchSheetData();
-      
-      res.json({ success: true, message: "Successfully connected to Google Sheets" });
+      res.json({ success: true, message: "API key saved successfully" });
     } catch (error) {
-      console.error("Error connecting to Google Sheets:", error);
-      res.status(500).json({ error: "Failed to connect to Google Sheets" });
+      console.error("Error saving Google Sheets API key:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to save API key" 
+      });
     }
   });
 

@@ -12,7 +12,7 @@ const Settings: React.FC = () => {
   const [googleSheets, setGoogleSheets] = useState({
     apiKey: '',
     spreadsheetId: '',
-    sheetName: ''
+    sheetName: 'Sheet1' // Default value
   });
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'none' | 'success' | 'error'>('none');
@@ -29,34 +29,19 @@ const Settings: React.FC = () => {
       });
       return;
     }
-
-    if (!googleSheets.spreadsheetId) {
-      toast({
-        title: "Missing Sheet ID",
-        description: "Please enter your Google Sheet ID",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!googleSheets.sheetName) {
-      toast({
-        title: "Missing Sheet Name",
-        description: "Please enter the Sheet Name (tab name)",
-        variant: "destructive",
-      });
-      return;
-    }
+    
+    // No need to validate spreadsheetId and sheetName as they'll be set in the Shops tab
 
     setIsConnecting(true);
     setConnectionStatus('none');
     setConnectionMessage('');
 
     try {
+      // We only need to pass the API key, as sheet-specific details will be provided in the Shops tab
       const result = await connectGoogleSheets({
         apiKey: googleSheets.apiKey,
-        spreadsheetId: googleSheets.spreadsheetId,
-        sheetName: googleSheets.sheetName
+        spreadsheetId: 'global', // Using a placeholder value
+        sheetName: 'global'     // Using a placeholder value
       });
       
       if (result.success) {
@@ -162,30 +147,7 @@ const Settings: React.FC = () => {
           
           <div className="p-6 space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="sheet-id">Google Sheet ID</Label>
-              <Input 
-                id="sheet-id" 
-                placeholder="Enter your Google Sheet ID" 
-                value={googleSheets.spreadsheetId}
-                onChange={(e) => setGoogleSheets({...googleSheets, spreadsheetId: e.target.value})}
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Found in your Google Sheet URL: https://docs.google.com/spreadsheets/d/[Sheet ID]/edit
-              </p>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="sheet-name">Sheet Name</Label>
-              <Input 
-                id="sheet-name" 
-                placeholder="e.g. Sales Data" 
-                value={googleSheets.sheetName}
-                onChange={(e) => setGoogleSheets({...googleSheets, sheetName: e.target.value})}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="api-key">API Key</Label>
+              <Label htmlFor="api-key">Google API Key</Label>
               <Input 
                 id="api-key" 
                 type="password" 
@@ -194,7 +156,8 @@ const Settings: React.FC = () => {
                 onChange={(e) => setGoogleSheets({...googleSheets, apiKey: e.target.value})}
               />
               <p className="text-xs text-gray-500 mt-1">
-                You need a Google Sheets API key with access to the Google Sheets API
+                Enter your Google API key with access to Google Sheets API. 
+                Sheet IDs and names can be configured per shop in the Shops tab.
               </p>
             </div>
             
@@ -216,7 +179,7 @@ const Settings: React.FC = () => {
               onClick={handleConnect}
               disabled={isConnecting}
             >
-              {isConnecting ? 'Connecting...' : 'Connect Google Sheet'}
+              {isConnecting ? 'Connecting...' : 'Save API Key'}
             </Button>
           </div>
         </CardContent>
