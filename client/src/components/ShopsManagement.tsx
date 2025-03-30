@@ -154,7 +154,7 @@ const ShopsManagement: React.FC = () => {
       name: newShop.name,
       platform: newShop.platform,
       region: newShop.region,
-      profitSharePercentage: newShop.profitSharePercentage,
+      profitSharePercentage: String(newShop.profitSharePercentage), // Convert to string for the server
       sheetId: newShop.sheetId,
       sheetName: newShop.sheetName
     });

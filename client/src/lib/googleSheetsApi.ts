@@ -5,7 +5,8 @@ import type {
   AgencyProfitData, 
   TimeFilter, 
   DateRange,
-  ShopInfo
+  ShopInfo,
+  GoogleSheetsConfig
 } from '@/types';
 
 // Function to fetch performance metrics based on time filter
@@ -108,5 +109,13 @@ export async function fetchChartData(
   }
   
   const response = await apiRequest('GET', `/api/chart-data?${params.toString()}`);
+  return response.json();
+}
+
+// Function to connect to Google Sheets
+export async function connectGoogleSheets(
+  config: GoogleSheetsConfig
+): Promise<{success: boolean, message: string}> {
+  const response = await apiRequest('POST', '/api/google-sheets/connect', config);
   return response.json();
 }

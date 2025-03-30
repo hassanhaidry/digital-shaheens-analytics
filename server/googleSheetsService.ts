@@ -18,6 +18,16 @@ export class GoogleSheetsService {
     };
   }
   
+  // Method to update the configuration
+  updateConfig(config: Partial<GoogleSheetsConfig>): void {
+    this.config = { ...this.config, ...config };
+    
+    // Update environment variables for persistence
+    if (config.apiKey) process.env.GOOGLE_API_KEY = config.apiKey;
+    if (config.spreadsheetId) process.env.SPREADSHEET_ID = config.spreadsheetId;
+    if (config.sheetName) process.env.SHEET_NAME = config.sheetName;
+  }
+  
   // Method to fetch data from Google Sheets
   async fetchSheetData(): Promise<any[]> {
     if (!this.config.apiKey || !this.config.spreadsheetId) {

@@ -91,3 +91,9 @@ export interface DateRange {
   from?: Date;
   to?: Date;
 }
+
+export interface GoogleSheetsConfig {
+  apiKey: string;
+  spreadsheetId: string;
+  sheetName: string;
+}

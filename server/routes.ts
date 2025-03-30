@@ -444,9 +444,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "API key and spreadsheet ID are required" });
       }
       
-      // Set environment variables (in a real app, this would be stored in a more secure way)
-      process.env.GOOGLE_API_KEY = apiKey;
-      process.env.SPREADSHEET_ID = spreadsheetId;
+      // Update the Google Sheets service configuration
+      googleSheetsService.updateConfig({
+        apiKey,
+        spreadsheetId,
+        sheetName: sheetName || "Sales Data"
+      });
       
       if (sheetName) {
         process.env.SHEET_NAME = sheetName;
